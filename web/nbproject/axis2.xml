@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<axis2 xmlns="http://www.netbeans.org/ns/axis2/1">
+    <libraries>
+        <library-ref name="mysql-connector-java-5.1.35-bin.jar"/>
+        <library-ref name="IndyCrawlerUtils.jar"/>
+    </libraries>
+    <service name="IndyCrawlerWeb">
+        <service-class>com.djunior.IndyCrawlerWeb</service-class>
+    </service>
+</axis2>
