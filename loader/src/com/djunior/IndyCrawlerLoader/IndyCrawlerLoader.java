@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 import javax.xml.bind.JAXBException;
 
 /**
@@ -20,7 +21,7 @@ import javax.xml.bind.JAXBException;
  * @author djunior
  */
 public class IndyCrawlerLoader {
-    private static final Properties prop;
+    private static final Properties prop = new Properties();
     /**
      * @param args the command line arguments
      */
