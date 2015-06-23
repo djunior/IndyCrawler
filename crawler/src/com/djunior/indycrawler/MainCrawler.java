@@ -51,7 +51,11 @@ public class MainCrawler {
             numberOfCrawlers = Integer.parseInt(prop.getProperty("NUMBER_OF_CRAWLERS"));
             outputFilePath = prop.getProperty("OUTPUT_FILE");
             proxy_host = prop.getProperty("PROXY_HOST");
-            proxy_port = Integer.parseInt(prop.getProperty("PROXY_PORT"));
+            String port = prop.getProperty("PROXY_PORT");
+            if (port.isEmpty())
+                proxy_port=0;
+            else
+                proxy_port = Integer.parseInt(port);
         } catch (IOException e){
             System.out.println("Caught IOException " + e.getMessage());
         } catch (NullPointerException e) {
