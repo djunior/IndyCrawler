@@ -12,6 +12,7 @@ import com.djunior.IndyCrawlerUtils.Event.EventManager;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 import javax.xml.bind.JAXBException;
@@ -26,8 +27,14 @@ public class IndyCrawlerLoader {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
-        String fileName = "/Users/djunior/eventList.xml";
+        String fileName;
+        try (InputStream input = IndyCrawlerLoader.class.getResourceAsStream("loader.properties")) {
+            prop.load(input);
+            fileName = prop.getProperty("INPUT_FILE");
+        } catch (IOException e){
+            System.out.println("[IndyCrawlerLoader] could not load properties file! exiting...");
+            return;
+        }
         try {
             FileInputStream xmlStream = new FileInputStream(fileName);
             System.out.println("Getting EventListResponse from xml");
@@ -49,9 +56,6 @@ public class IndyCrawlerLoader {
         } catch (IOException e) {
             System.out.println("Caught IOException " + e.getMessage());
         }
-//        createEventList
-        
-        
     }
     
 }

@@ -93,10 +93,9 @@ public class CCBBCrawler extends WebCrawler{
                 event = CCBBParser.parse(url,html);
                 MainCrawler.addEvent(event);
             } catch (CrawlerParserException e){
-                logger.error("CrawlerParserException Exception: {}", e.getMessage());
-                e.printStackTrace();
+                logger.warn("CCBBCrawler caught CrawlerParserException Exception: {}", e.getMessage());
             } catch (IOException e){
-                logger.error("IOException: {}",e.getMessage());
+                logger.warn("CCBBCrawler caught IOException: {}",e.getMessage());
             }
                  
        }

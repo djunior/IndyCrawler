@@ -57,9 +57,9 @@ public class MainCrawler {
             else
                 proxy_port = Integer.parseInt(port);
         } catch (IOException e){
-            System.out.println("Caught IOException " + e.getMessage());
+            logger.warn("Caught IOException " + e.getMessage());
         } catch (NullPointerException e) {
-            System.out.println("Caught NullPointerException " + e.getMessage());
+            logger.warn("Caught NullPointerException " + e.getMessage());
         }
         
         CrawlConfig config = new CrawlConfig();
@@ -93,7 +93,7 @@ public class MainCrawler {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outputFilePath).getAbsoluteFile()))) {
             bw.write(new EventListResponse(eventList).toXml());
         } catch (IOException e) {
-            logger.error("Caught IOException while saving output file: {}",outputFilePath);
+            logger.error("MainCrawler caught IOException while saving output file: {}",outputFilePath);
             logger.error(e.getMessage());
         }
 
