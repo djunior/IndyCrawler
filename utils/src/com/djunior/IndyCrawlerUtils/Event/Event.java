@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @XmlRootElement(name = "event")
 //@XmlType(propOrder = {"name","locationId","price","url","startDate","endDate"})
-public class Event {
+public class Event implements java.io.Serializable{
     private static final String dateFormatStr = "yyyy-MM-dd HH:mm:ss";
     private String name,description,price,url;
     private int eventId,locationId;
