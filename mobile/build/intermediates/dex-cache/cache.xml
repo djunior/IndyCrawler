@@ -2,6 +2,13 @@
 <items version="2" >
 
     <item
+        jar="/home/djunior/workspace/IndyCrawler/mobile/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.0.0/libs/internal_impl-22.0.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="b5b92f469d515a13d778900f6d50c03d12f35504">
+        <dex dex="/home/djunior/workspace/IndyCrawler/mobile/app/build/intermediates/pre-dexed/debug/internal_impl-22.0.0-352e247177688c09f5e87be68aeb81e4b57f210d.jar" />
+    </item>
+    <item
         jar="/home/djunior/Android/Sdk/extras/android/m2repository/com/android/support/support-annotations/22.0.0/support-annotations-22.0.0.jar"
         jumboMode="false"
         revision="21.1.2"
@@ -9,11 +16,11 @@
         <dex dex="/home/djunior/workspace/IndyCrawler/mobile/app/build/intermediates/pre-dexed/debug/support-annotations-22.0.0-a0197a381bf8af8614cbac54e07a3876d20892eb.jar" />
     </item>
     <item
-        jar="/home/djunior/workspace/IndyCrawler/mobile/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.0.0/libs/internal_impl-22.0.0.jar"
+        jar="/home/djunior/workspace/IndyCrawler/mobile/app/lib/IndyCrawlerUtils.jar"
         jumboMode="false"
         revision="21.1.2"
-        sha1="b5b92f469d515a13d778900f6d50c03d12f35504">
-        <dex dex="/home/djunior/workspace/IndyCrawler/mobile/app/build/intermediates/pre-dexed/debug/internal_impl-22.0.0-352e247177688c09f5e87be68aeb81e4b57f210d.jar" />
+        sha1="2c7f133edbaff8ac94592f18d56e3f2dafd566c5">
+        <dex dex="/home/djunior/workspace/IndyCrawler/mobile/app/build/intermediates/pre-dexed/debug/IndyCrawlerUtils-bdbc8c1ee51f1ea5cfcee960a60f63ebcc8700d8.jar" />
     </item>
     <item
         jar="/home/djunior/workspace/IndyCrawler/mobile/app/build/intermediates/exploded-aar/com.android.support/support-v4/22.0.0/classes.jar"

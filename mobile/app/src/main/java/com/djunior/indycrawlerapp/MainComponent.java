@@ -1,38 +1,39 @@
 package com.djunior.indycrawlerapp;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.impl.client.BasicResponseHandler;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import com.djunior.IndyCrawlerUtils.Event.Event;
+
+import com.djunior.indycrawlerapp.EventDescription;
 
 public class MainComponent extends ActionBarActivity {
-
+    public final static String EXTRA_MESSAGE = "com.djunior.indycrawlerapp.MESSAGE";
     SimpleAdapter adapter;
     ArrayList<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
+    List<Event> eventList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +50,24 @@ public class MainComponent extends ActionBarActivity {
 
         listView.setAdapter(adapter);
 
-        addEvent("Evento 1", "CCBB - 24/05/2015 a 26/07/2016");
-        addEvent("Evento 2","MAC - 24/05/2015 a 26/07/2016");
-        addEvent("Evento 3","MAR - 24/05/2015 a 26/07/2016");
-        addEvent("Evento 4","MAM - 24/05/2015 a 26/07/2016");
+        AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> av, View v, int position, long id) {
+                Log.d("IndyCrawlerApp", "Position " + position);
+                sendMessage(eventList.get(position));
+            }
+        };
+
+        listView.setOnItemClickListener(listener);
+        getEvents();
     }
+
+    public void sendMessage(Event e){
+        Intent intent = new Intent(this, EventDescription.class);
+        intent.putExtra(EXTRA_MESSAGE,e);
+        startActivity(intent);
+    }
+
 
     private void addEvent(String name, String info){
         HashMap<String,String> event = new HashMap<>();
@@ -67,10 +81,51 @@ public class MainComponent extends ActionBarActivity {
         Log.d("IndyCrawlerApp","getEvent(), creating NetworkWrapper");
         try {
             Log.d("IndyCrawlerApp","Calling networkwrapper");
-            String serverResponse = new NetworkWrapper().execute("http://10.10.1.35:8080/axis2/services/IndyCrawler/getEvents").get();
-            Log.d("IndyCrawlerApp","ServerResponse = " + serverResponse);
 
-            // TODO - Parse response and build event list
+            NetworkWrapper nw = new NetworkWrapper();
+            String serverResponse = nw.execute("http://10.10.1.34:8080/axis2/services/IndyCrawlerWeb/getEvents").get();
+            @SuppressLint("NewApi") InputStream in = new ByteArrayInputStream(serverResponse.getBytes(StandardCharsets.UTF_8));
+            Log.d("IndyCrawlerApp","ServerResponse = " + serverResponse);
+            DocumentBuilderFactory dbf = DocumentBuilderFactory
+                    .newInstance();
+            DocumentBuilder builder;
+            builder = dbf.newDocumentBuilder();
+            Document mainDoc = builder.parse(in);
+            NodeList nodeList = mainDoc.getElementsByTagName("ns:return");
+            for (int i = 0; i < nodeList.getLength(); i++){
+                System.out.println("Creating event");
+                Event e = new Event();
+                System.out.println("Getting child nodes");
+                NodeList childNodes = nodeList.item(i).getChildNodes();
+                System.out.println("child node length " + childNodes.getLength());
+                for (int j = 0; j < childNodes.getLength();j++ ){
+                    String name = childNodes.item(j).getNodeName();
+                    String value = childNodes.item(j).getTextContent();
+                    System.out.println("Name:" + name);
+                    System.out.println("Value:" + value);
+                    if (name.equals("ax25:name")) {
+                        e.setName(value);
+                    } else if(name.equals("ax25:description")){
+                        e.setDescription(value);
+                    } else if(name.equals("ax25:endDateTime")) {
+                        e.setEndDateTime(value);
+                    } else if(name.equals("ax25:startDateTime")) {
+                        e.setStartDateTime(value);
+                    } else if(name.equals("ax25:price")){
+                        e.setPrice(value);
+                    } else if(name.equals("ax25:locationId")){
+                        e.setLocationId(Integer.parseInt(value));
+                    } else if(name.equals("ax25:eventId")){
+                        e.setEventId(Integer.parseInt(value));
+                    } else if(name.equals("ax25:url")){
+                        e.setUrl(value);
+                    }
+                }
+
+                eventList.add(e);
+                addEvent(e.getName(), "CCBB - " + e.getDate());
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
