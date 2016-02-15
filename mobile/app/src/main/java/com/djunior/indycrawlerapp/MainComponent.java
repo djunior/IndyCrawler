@@ -1,15 +1,25 @@
 package com.djunior.indycrawlerapp;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
 
 import org.w3c.dom.Document;
@@ -34,6 +44,9 @@ public class MainComponent extends ActionBarActivity {
     SimpleAdapter adapter;
     ArrayList<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
     List<Event> eventList = new ArrayList<>();
+    String ipAddress = "10.10.1.70";
+    private ProgressBar spinner;
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +54,10 @@ public class MainComponent extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_component);
 
-        ListView listView = (ListView) findViewById(R.id.listView);
+        spinner=(ProgressBar)findViewById(R.id.progressBar);
+        spinner.setVisibility(View.GONE);
+
+        listView = (ListView) findViewById(R.id.listView);
 
         adapter=new SimpleAdapter(this, list,
                 R.layout.eventlist_element,
@@ -64,10 +80,9 @@ public class MainComponent extends ActionBarActivity {
 
     public void sendMessage(Event e){
         Intent intent = new Intent(this, EventDescription.class);
-        intent.putExtra(EXTRA_MESSAGE,e);
+        intent.putExtra(EXTRA_MESSAGE, e);
         startActivity(intent);
     }
-
 
     private void addEvent(String name, String info){
         HashMap<String,String> event = new HashMap<>();
@@ -78,12 +93,18 @@ public class MainComponent extends ActionBarActivity {
     }
 
     private void getEvents(){
-        Log.d("IndyCrawlerApp","getEvent(), creating NetworkWrapper");
+        Log.d("IndyCrawlerApp", "getEvent(), creating NetworkWrapper");
         try {
             Log.d("IndyCrawlerApp","Calling networkwrapper");
 
+            spinner.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.GONE);
+
             NetworkWrapper nw = new NetworkWrapper();
-            String serverResponse = nw.execute("http://10.10.1.34:8080/axis2/services/IndyCrawlerWeb/getEvents").get();
+            String serverResponse = nw.execute("http://" + ipAddress + ":8080/axis2/services/IndyCrawlerWeb/getEvents").get();
+
+            list.clear();
+
             @SuppressLint("NewApi") InputStream in = new ByteArrayInputStream(serverResponse.getBytes(StandardCharsets.UTF_8));
             Log.d("IndyCrawlerApp","ServerResponse = " + serverResponse);
             DocumentBuilderFactory dbf = DocumentBuilderFactory
@@ -126,6 +147,9 @@ public class MainComponent extends ActionBarActivity {
                 addEvent(e.getName(), "CCBB - " + e.getDate());
             }
 
+            spinner.setVisibility(View.GONE);
+            listView.setVisibility(View.VISIBLE);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -138,6 +162,32 @@ public class MainComponent extends ActionBarActivity {
         return true;
     }
 
+    private void showIPDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Insira o IP do servidor:");
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                ipAddress = input.getText().toString();
+                getEvents();
+            }
+
+        });
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -147,9 +197,14 @@ public class MainComponent extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            showIPDialog();
+            return true;
+        } else if(id == R.id.reload) {
+            getEvents();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
 }

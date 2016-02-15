@@ -1,5 +1,6 @@
 package com.djunior.indycrawlerapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -12,7 +13,7 @@ import android.widget.TextView;
 
 import com.djunior.IndyCrawlerUtils.Event.Event;
 
-public class EventDescription extends ActionBarActivity {
+public class EventDescription extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
